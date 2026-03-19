@@ -30,7 +30,7 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    tag: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String)
 
     note_tags: Mapped[list["NoteTag"]] = relationship(back_populates="tag")
 

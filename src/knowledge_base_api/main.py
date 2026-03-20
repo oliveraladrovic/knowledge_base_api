@@ -98,6 +98,18 @@ def read_notes(service: Services = Depends(get_service), db: Session = Depends(g
     return service.read_notes(db)
 
 
+@app.get("/notes/{note_id}", response_model=NoteOut)
+def get_note_by_id(
+    note_id: int,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.get_note_by_id(note_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 @app.put("/notes/{note_id}", response_model=NoteOut)
 def update_note(
     note_id: int,

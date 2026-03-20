@@ -71,6 +71,13 @@ class Services:
     def read_notes(self, db: Session) -> list[Note]:
         return db.query(Note).all()
 
+    def get_note_by_id(self, note_id: int, db: Session) -> Note:
+        note = db.query(Note).filter(Note.id == note_id).first()
+        if note is None:
+            raise ResourceNotFoundError("Note not found.")
+
+        return note
+
     def update_note(self, note_id: int, note: dict, db: Session) -> Note:
         updating_note = db.query(Note).filter(Note.id == note_id).first()
         if updating_note is None:

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .exceptions import InvalidDataError, ResourceNotFoundError
 from .services import Services, get_service
-from .schemas import Health, UserIn, UserOut
+from .schemas import Health, UserIn, UserOut, NoteIn, NoteOut
 
 
 app = FastAPI()
@@ -62,3 +62,20 @@ def delete_user(
         service.delete_user(user_id, db)
     except ResourceNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+# -------------------------
+# NOTES
+# -------------------------
+@app.post("/notes", response_model=NoteOut, status_code=status.HTTP_201_CREATED)
+def create_note(
+    note: NoteIn,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.create_note(note.model_dump(), db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except InvalidDataError as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

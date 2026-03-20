@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .exceptions import InvalidDataError
 from .services import Services, get_service
-from schemas import Health, UserIn, UserOut
+from .schemas import Health, UserIn, UserOut
 
 
 app = FastAPI()
@@ -30,3 +30,8 @@ def create_user(
         return service.create_user(user.model_dump(), db)
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.get("/users", response_model=list[UserOut])
+def read_users(service: Services = Depends(get_service), db: Session = Depends(get_db)):
+    return service.read_users(db)

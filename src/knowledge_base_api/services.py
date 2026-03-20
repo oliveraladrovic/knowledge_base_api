@@ -14,6 +14,9 @@ class Services:
         db.refresh(new_user)
         return new_user
 
+    def read_users(self, db: Session) -> list[User]:
+        return db.query(User).all()
+
 
 service = Services()
 

@@ -167,7 +167,7 @@ def read_tags(service: Services = Depends(get_service), db: Session = Depends(ge
     return service.read_tags(db)
 
 
-@app.put("/tags{tag_id}", response_model=TagOut)
+@app.put("/tags/{tag_id}", response_model=TagOut)
 def update_tag(
     tag_id: int,
     tag: TagIn,
@@ -180,3 +180,13 @@ def update_tag(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.delete("/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_tag(
+    tag_id: int, service: Services = Depends(get_service), db: Session = Depends(get_db)
+):
+    try:
+        service.delete_tag(tag_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -151,6 +151,14 @@ class Services:
         db.refresh(updating_tag)
         return updating_tag
 
+    def delete_tag(self, tag_id: int, db: Session) -> None:
+        deleting_tag = db.query(Tag).filter(Tag.id == tag_id).first()
+        if deleting_tag is None:
+            raise ResourceNotFoundError("Tag not found.")
+
+        db.delete(deleting_tag)
+        db.commit()
+
 
 service = Services()
 

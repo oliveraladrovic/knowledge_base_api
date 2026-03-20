@@ -84,3 +84,18 @@ def create_note(
 @app.get("/notes", response_model=list[NoteOut])
 def read_notes(service: Services = Depends(get_service), db: Session = Depends(get_db)):
     return service.read_notes(db)
+
+
+@app.put("/notes/{note_id}", response_model=NoteOut)
+def update_note(
+    note_id: int,
+    note: NoteIn,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.update_note(note_id, note.model_dump(), db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except InvalidDataError as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

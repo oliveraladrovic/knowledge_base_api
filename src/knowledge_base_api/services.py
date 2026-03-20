@@ -64,6 +64,25 @@ class Services:
     def read_notes(self, db: Session) -> list[Note]:
         return db.query(Note).all()
 
+    def update_note(self, note_id: int, note: dict, db: Session) -> Note:
+        updating_note = db.query(Note).filter(Note.id == note_id).first()
+        if updating_note is None:
+            raise ResourceNotFoundError("Note not found.")
+
+        user = db.query(User).filter(User.id == note["user_id"]).first()
+        if user is None:
+            raise ResourceNotFoundError("User not found.")
+
+        note_text = note["text"].strip()
+        if not note_text:
+            raise InvalidDataError("Note can not be empty.")
+
+        updating_note.user_id = user.id
+        updating_note.text = note_text
+        db.commit()
+        db.refresh(updating_note)
+        return updating_note
+
 
 service = Services()
 

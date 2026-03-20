@@ -37,6 +37,18 @@ def read_users(service: Services = Depends(get_service), db: Session = Depends(g
     return service.read_users(db)
 
 
+@app.get("/users/{user_id}", response_model=UserOut)
+def get_user_by_id(
+    user_id: int,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.get_user_by_id(user_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 @app.put("/users/{user_id}", response_model=UserOut)
 def update_user(
     user_id: int,

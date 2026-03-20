@@ -21,6 +21,13 @@ class Services:
     def read_users(self, db: Session) -> list[User]:
         return db.query(User).all()
 
+    def get_user_by_id(self, user_id: int, db: Session) -> User:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user is None:
+            raise ResourceNotFoundError("User not found.")
+
+        return user
+
     def update_user(self, user_id: int, user: dict, db: Session) -> User:
         updating_user = db.query(User).filter(User.id == user_id).first()
         if updating_user is None:

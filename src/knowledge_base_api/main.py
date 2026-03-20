@@ -3,7 +3,17 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .exceptions import InvalidDataError, ResourceNotFoundError
 from .services import Services, get_service
-from .schemas import Health, UserIn, UserOut, NoteIn, NoteOut, TagIn, TagOut
+from .schemas import (
+    Health,
+    UserIn,
+    UserOut,
+    NoteIn,
+    NoteOut,
+    TagIn,
+    TagOut,
+    NoteTagIn,
+    NoteTagOut,
+)
 
 
 app = FastAPI()
@@ -190,3 +200,20 @@ def delete_tag(
         service.delete_tag(tag_id, db)
     except ResourceNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+# -------------------------
+# NOTES / TAGS
+# -------------------------
+@app.post("/notes/tags", response_model=NoteTagOut, status_code=status.HTTP_201_CREATED)
+def create_note_tag(
+    note_tag: NoteTagIn,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.create_note_tag(note_tag.model_dump(), db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except InvalidDataError as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

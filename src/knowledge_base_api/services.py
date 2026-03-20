@@ -185,6 +185,12 @@ class Services:
         db.refresh(new_note_tag)
         return new_note_tag
 
+    def read_note_tags(self, db: Session) -> list[NoteTag]:
+        print("Nešto")
+        result = db.query(NoteTag).all()
+        print(result)
+        return result
+
 
 service = Services()
 

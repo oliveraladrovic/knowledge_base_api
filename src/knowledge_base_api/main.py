@@ -203,9 +203,9 @@ def delete_tag(
 
 
 # -------------------------
-# NOTES / TAGS
+# NOTE_TAGS
 # -------------------------
-@app.post("/notes/tags", response_model=NoteTagOut, status_code=status.HTTP_201_CREATED)
+@app.post("/note_tags", response_model=NoteTagOut, status_code=status.HTTP_201_CREATED)
 def create_note_tag(
     note_tag: NoteTagIn,
     service: Services = Depends(get_service),
@@ -217,3 +217,10 @@ def create_note_tag(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.get("/note_tags", response_model=list[NoteTagOut])
+def read_note_tags(
+    service: Services = Depends(get_service), db: Session = Depends(get_db)
+):
+    return service.read_note_tags(db)

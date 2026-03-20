@@ -83,6 +83,14 @@ class Services:
         db.refresh(updating_note)
         return updating_note
 
+    def delete_note(self, note_id: int, db: Session) -> None:
+        deleting_note = db.query(Note).filter(Note.id == note_id).first()
+        if deleting_note is None:
+            raise ResourceNotFoundError("Note not found.")
+
+        db.delete(deleting_note)
+        db.commit()
+
 
 service = Services()
 

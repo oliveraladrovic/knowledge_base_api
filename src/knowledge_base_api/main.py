@@ -79,3 +79,8 @@ def create_note(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.get("/notes", response_model=list[NoteOut])
+def read_notes(service: Services = Depends(get_service), db: Session = Depends(get_db)):
+    return service.read_notes(db)

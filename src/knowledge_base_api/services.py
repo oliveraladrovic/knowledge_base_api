@@ -61,6 +61,9 @@ class Services:
         db.refresh(new_note)
         return new_note
 
+    def read_notes(self, db: Session) -> list[Note]:
+        return db.query(Note).all()
+
 
 service = Services()
 

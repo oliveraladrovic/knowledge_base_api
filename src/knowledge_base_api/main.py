@@ -239,3 +239,15 @@ def update_note_tag(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.delete("/note_tags/{note_tag_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_note_tag(
+    note_tag_id: int,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        service.delete_note_tag(note_tag_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -133,6 +133,24 @@ class Services:
     def read_tags(self, db: Session) -> list[Tag]:
         return db.query(Tag).all()
 
+    def update_tag(self, tag_id: int, tag: dict, db: Session) -> Tag:
+        updating_tag = db.query(Tag).filter(Tag.id == tag_id).first()
+        if updating_tag is None:
+            raise ResourceNotFoundError("Tag not found.")
+
+        tag_name = tag["name"].strip().lower()
+        if not tag_name:
+            raise InvalidDataError("Tag can not be empty.")
+
+        existing = db.query(Tag).filter(Tag.name == tag_name).first()
+        if existing is not None:
+            raise InvalidDataError("Tag already exists.")
+
+        updating_tag.name = tag_name
+        db.commit()
+        db.refresh(updating_tag)
+        return updating_tag
+
 
 service = Services()
 

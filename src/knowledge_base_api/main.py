@@ -165,3 +165,18 @@ def create_tag(
 @app.get("/tags", response_model=list[TagOut])
 def read_tags(service: Services = Depends(get_service), db: Session = Depends(get_db)):
     return service.read_tags(db)
+
+
+@app.put("/tags{tag_id}", response_model=TagOut)
+def update_tag(
+    tag_id: int,
+    tag: TagIn,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.update_tag(tag_id, tag.model_dump(), db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except InvalidDataError as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

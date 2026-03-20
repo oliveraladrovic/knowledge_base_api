@@ -1,6 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
 
+class Health(BaseModel):
+    health: str
+
+
 class UserIn(BaseModel):
     name: str
 

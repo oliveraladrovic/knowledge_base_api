@@ -1,9 +1,9 @@
 from fastapi import FastAPI, status, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .database import get_db
-from .exceptions import DomainError
+from .exceptions import InvalidDataError
 from .services import Services, get_service
-from schemas import UserIn, UserOut
+from schemas import Health, UserIn, UserOut
 
 
 app = FastAPI()
@@ -12,8 +12,8 @@ app = FastAPI()
 # -------------------------
 # HEALTH CHECK
 # -------------------------
-@app.get("/health")
-def health_check() -> dict[str, str]:
+@app.get("/health", response_model=Health)
+def health_check():
     return {"health": "OK"}
 
 
@@ -28,5 +28,5 @@ def create_user(
 ):
     try:
         return service.create_user(user.model_dump(), db)
-    except DomainError as e:
+    except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

@@ -4,3 +4,7 @@ class DomainError(Exception):
 
 class InvalidDataError(DomainError):
     pass
+
+
+class ResourceNotFoundError(DomainError):
+    pass

@@ -102,6 +102,10 @@ class Services:
         if deleting_note is None:
             raise ResourceNotFoundError("Note not found.")
 
+        invalid_note_tags = db.query(NoteTag).filter(NoteTag.note_id == note_id).all()
+        for note_tag in invalid_note_tags:
+            db.delete(note_tag)
+
         db.delete(deleting_note)
         db.commit()
 

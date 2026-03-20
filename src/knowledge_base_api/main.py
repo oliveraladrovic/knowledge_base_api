@@ -160,3 +160,8 @@ def create_tag(
         return service.create_tag(tag.model_dump(), db)
     except InvalidDataError as e:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+
+
+@app.get("/tags", response_model=list[TagOut])
+def read_tags(service: Services = Depends(get_service), db: Session = Depends(get_db)):
+    return service.read_tags(db)

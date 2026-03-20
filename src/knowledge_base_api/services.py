@@ -130,6 +130,9 @@ class Services:
         db.refresh(new_tag)
         return new_tag
 
+    def read_tags(self, db: Session) -> list[Tag]:
+        return db.query(Tag).all()
+
 
 service = Services()
 

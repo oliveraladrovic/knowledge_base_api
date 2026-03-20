@@ -29,6 +29,13 @@ class Services:
         db.refresh(updating_user)
         return updating_user
 
+    def delete_user(self, user_id: int, db: Session) -> None:
+        deleting_user = db.query(User).filter(User.id == user_id).first()
+        if deleting_user is None:
+            raise ResourceNotFoundError("User not found.")
+        db.delete(deleting_user)
+        db.commit()
+
 
 service = Services()
 

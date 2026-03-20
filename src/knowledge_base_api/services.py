@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .exceptions import InvalidDataError, ResourceNotFoundError
-from .models import User, Note
+from .models import User, Note, Tag
 
 
 class Services:
@@ -111,6 +111,24 @@ class Services:
             raise ResourceNotFoundError("User not found.")
 
         return user.notes
+
+    # -------------------------
+    # TAGS
+    # -------------------------
+    def create_tag(self, tag: dict, db: Session) -> Tag:
+        tag_name = tag["name"].strip().lower()
+        if not tag_name:
+            raise InvalidDataError("Tag can not be empty.")
+
+        existing = db.query(Tag).filter(Tag.name == tag_name).first()
+        if existing is not None:
+            raise InvalidDataError("Tag already exist.")
+
+        new_tag = Tag(name=tag_name)
+        db.add(new_tag)
+        db.commit()
+        db.refresh(new_tag)
+        return new_tag
 
 
 service = Services()

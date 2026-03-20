@@ -27,3 +27,14 @@ class NoteOut(BaseModel):
     text: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TagIn(BaseModel):
+    name: str
+
+
+class TagOut(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)

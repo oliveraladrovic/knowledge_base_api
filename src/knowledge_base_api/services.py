@@ -177,7 +177,7 @@ class Services:
             .first()
         )
         if existing is not None:
-            raise InvalidDataError("Tag already add to note.")
+            raise InvalidDataError("Tag already added to note.")
 
         new_note_tag = NoteTag(note_id=note.id, tag_id=tag.id)
         db.add(new_note_tag)
@@ -186,10 +186,35 @@ class Services:
         return new_note_tag
 
     def read_note_tags(self, db: Session) -> list[NoteTag]:
-        print("Nešto")
         result = db.query(NoteTag).all()
-        print(result)
         return result
+
+    def update_note_tag(self, note_tag_id: int, note_tag: dict, db: Session) -> NoteTag:
+        updating_note_tag = db.query(NoteTag).filter(NoteTag.id == note_tag_id).first()
+        if updating_note_tag is None:
+            raise ResourceNotFoundError("Note tag not found.")
+
+        note = db.query(Note).filter(Note.id == note_tag["note_id"]).first()
+        if note is None:
+            raise ResourceNotFoundError("Note not found.")
+
+        tag = db.query(Tag).filter(Tag.id == note_tag["tag_id"]).first()
+        if tag is None:
+            raise ResourceNotFoundError("Tag not found.")
+
+        existing = (
+            db.query(NoteTag)
+            .filter(NoteTag.note_id == note.id, NoteTag.tag_id == tag.id)
+            .first()
+        )
+        if existing is not None:
+            raise InvalidDataError("Tag already added to note.")
+
+        updating_note_tag.note_id = note.id
+        updating_note_tag.tag_id = tag.id
+        db.commit()
+        db.refresh(updating_note_tag)
+        return updating_note_tag
 
 
 service = Services()

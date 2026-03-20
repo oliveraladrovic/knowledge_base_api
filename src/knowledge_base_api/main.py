@@ -224,3 +224,18 @@ def read_note_tags(
     service: Services = Depends(get_service), db: Session = Depends(get_db)
 ):
     return service.read_note_tags(db)
+
+
+@app.put("/note_tags/{note_tag_id}", response_model=NoteTagOut)
+def update_note_tag(
+    note_tag_id: int,
+    note_tag: NoteTagIn,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.update_note_tag(note_tag_id, note_tag.model_dump(), db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except InvalidDataError as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))

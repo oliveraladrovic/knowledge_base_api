@@ -47,6 +47,15 @@ class Services:
         if deleting_user is None:
             raise ResourceNotFoundError("User not found.")
 
+        invalid_notes = db.query(Note).filter(Note.user_id == user_id).all()
+        for note in invalid_notes:
+            invalid_note_tags = (
+                db.query(NoteTag).filter(NoteTag.note_id == note.id).all()
+            )
+            for note_tag in invalid_note_tags:
+                db.delete(note_tag)
+            db.delete(note)
+
         db.delete(deleting_user)
         db.commit()
 

@@ -91,6 +91,13 @@ class Services:
         db.delete(deleting_note)
         db.commit()
 
+    def get_notes_by_user_id(self, user_id: int, db: Session) -> list[Note]:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user is None:
+            raise ResourceNotFoundError("User not found.")
+
+        return user.notes
+
 
 service = Services()
 

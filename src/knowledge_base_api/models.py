@@ -21,12 +21,17 @@ class Note(Base):
     __tablename__ = "notes"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE")
+    )
     text: Mapped[str] = mapped_column(String)
 
     user: Mapped[User] = relationship(back_populates="notes")
     note_tags: Mapped[list["NoteTag"]] = relationship(
         back_populates="note", cascade="all, delete-orphan"
+    )
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag", secondary="note_tags", back_populates="notes", viewonly=True
     )
 
 
@@ -34,10 +39,13 @@ class Tag(Base):
     __tablename__ = "tags"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String, unique=True)
 
     note_tags: Mapped[list["NoteTag"]] = relationship(
         back_populates="tag", cascade="all, delete-orphan"
+    )
+    notes: Mapped[list[Note]] = relationship(
+        Note, secondary="note_tags", back_populates="tags", viewonly=True
     )
 
 
@@ -45,8 +53,12 @@ class NoteTag(Base):
     __tablename__ = "note_tags"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    note_id: Mapped[int] = mapped_column(Integer, ForeignKey("notes.id"))
-    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey("tags.id"))
+    note_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("notes.id", ondelete="CASCADE")
+    )
+    tag_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("tags.id", ondelete="CASCADE")
+    )
 
     note: Mapped[Note] = relationship(back_populates="note_tags")
     tag: Mapped[Tag] = relationship(back_populates="note_tags")

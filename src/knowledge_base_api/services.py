@@ -83,7 +83,7 @@ class Services:
 
         tag = db.query(Tag).filter(Tag.name == tag_name).first()
         if tag is None:
-            raise ResourceNotFoundError("Tag not found.")
+            return []
 
         return [note_tag.note for note_tag in tag.note_tags]
 
@@ -162,7 +162,7 @@ class Services:
 
     def get_tags_by_note_id(self, note_id: int, db: Session) -> list[Tag]:
         note = db.query(Note).filter(Note.id == note_id).first()
-        if Note is None:
+        if note is None:
             raise ResourceNotFoundError("Note not found.")
 
         return [note_tag.tag for note_tag in note.note_tags]

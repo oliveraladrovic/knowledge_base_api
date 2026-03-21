@@ -109,10 +109,7 @@ def read_notes(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.read_notes(tag_name, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.read_notes(tag_name, db)
 
 
 @app.get("/notes/{note_id}", response_model=NoteOut)
@@ -128,7 +125,7 @@ def get_note_by_id(
 
 
 @app.get("/tags/{tag_id}/notes", response_model=list[NoteOut])
-def get_notes_by_tyg_id(
+def get_notes_by_tag_id(
     tag_id, service: Services = Depends(get_service), db: Session = Depends(get_db)
 ):
     try:

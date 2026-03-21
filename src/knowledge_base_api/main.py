@@ -104,8 +104,15 @@ def create_note(
 
 
 @app.get("/notes", response_model=list[NoteOut])
-def read_notes(service: Services = Depends(get_service), db: Session = Depends(get_db)):
-    return service.read_notes(db)
+def read_notes(
+    tag_name: str = None,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.read_notes(tag_name, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @app.get("/notes/{note_id}", response_model=NoteOut)

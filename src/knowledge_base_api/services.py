@@ -77,8 +77,15 @@ class Services:
         db.refresh(new_note)
         return new_note
 
-    def read_notes(self, db: Session) -> list[Note]:
-        return db.query(Note).all()
+    def read_notes(self, tag_name: str | None, db: Session) -> list[Note]:
+        if tag_name is None:
+            return db.query(Note).all()
+
+        tag = db.query(Tag).filter(Tag.name == tag_name).first()
+        if tag is None:
+            raise ResourceNotFoundError("Tag not found.")
+
+        return [note_tag.note for note_tag in tag.note_tags]
 
     def get_note_by_id(self, note_id: int, db: Session) -> Note:
         note = db.query(Note).filter(Note.id == note_id).first()

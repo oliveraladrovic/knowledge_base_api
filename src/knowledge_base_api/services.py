@@ -87,6 +87,13 @@ class Services:
 
         return note
 
+    def get_notes_by_tag_id(self, tag_id: int, db: Session) -> list[Note]:
+        tag = db.query(Tag).filter(Tag.id == tag_id).first()
+        if tag is None:
+            raise ResourceNotFoundError("Tag not found.")
+
+        return [note_tag.note for note_tag in tag.note_tags]
+
     def update_note(self, note_id: int, note: dict, db: Session) -> Note:
         updating_note = db.query(Note).filter(Note.id == note_id).first()
         if updating_note is None:

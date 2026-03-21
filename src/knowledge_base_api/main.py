@@ -120,6 +120,16 @@ def get_note_by_id(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
+@app.get("/tags/{tag_id}/notes", response_model=list[NoteOut])
+def get_notes_by_tyg_id(
+    tag_id, service: Services = Depends(get_service), db: Session = Depends(get_db)
+):
+    try:
+        return service.get_notes_by_tag_id(tag_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 @app.put("/notes/{note_id}", response_model=NoteOut)
 def update_note(
     note_id: int,

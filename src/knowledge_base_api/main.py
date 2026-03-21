@@ -177,6 +177,18 @@ def read_tags(service: Services = Depends(get_service), db: Session = Depends(ge
     return service.read_tags(db)
 
 
+@app.get("/notes/{note_id}/tags", response_model=list[TagOut])
+def get_tags_by_note_id(
+    note_id: int,
+    service: Services = Depends(get_service),
+    db: Session = Depends(get_db),
+):
+    try:
+        return service.get_tags_by_note_id(note_id, db)
+    except ResourceNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 @app.put("/tags/{tag_id}", response_model=TagOut)
 def update_tag(
     tag_id: int,

@@ -47,15 +47,6 @@ class Services:
         if deleting_user is None:
             raise ResourceNotFoundError("User not found.")
 
-        invalid_notes = db.query(Note).filter(Note.user_id == user_id).all()
-        for note in invalid_notes:
-            invalid_note_tags = (
-                db.query(NoteTag).filter(NoteTag.note_id == note.id).all()
-            )
-            for note_tag in invalid_note_tags:
-                db.delete(note_tag)
-            db.delete(note)
-
         db.delete(deleting_user)
         db.commit()
 
@@ -125,10 +116,6 @@ class Services:
         if deleting_note is None:
             raise ResourceNotFoundError("Note not found.")
 
-        invalid_note_tags = db.query(NoteTag).filter(NoteTag.note_id == note_id).all()
-        for note_tag in invalid_note_tags:
-            db.delete(note_tag)
-
         db.delete(deleting_note)
         db.commit()
 
@@ -189,10 +176,6 @@ class Services:
         deleting_tag = db.query(Tag).filter(Tag.id == tag_id).first()
         if deleting_tag is None:
             raise ResourceNotFoundError("Tag not found.")
-
-        invalid_note_tags = db.query(NoteTag).filter(NoteTag.tag_id == tag_id).all()
-        for note_tag in invalid_note_tags:
-            db.delete(note_tag)
 
         db.delete(deleting_tag)
         db.commit()

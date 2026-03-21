@@ -12,7 +12,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
 
-    notes: Mapped[list["Note"]] = relationship(back_populates="user")
+    notes: Mapped[list["Note"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Note(Base):
@@ -23,7 +25,9 @@ class Note(Base):
     text: Mapped[str] = mapped_column(String)
 
     user: Mapped[User] = relationship(back_populates="notes")
-    note_tags: Mapped[list["NoteTag"]] = relationship(back_populates="note")
+    note_tags: Mapped[list["NoteTag"]] = relationship(
+        back_populates="note", cascade="all, delete-orphan"
+    )
 
 
 class Tag(Base):
@@ -32,7 +36,9 @@ class Tag(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
 
-    note_tags: Mapped[list["NoteTag"]] = relationship(back_populates="tag")
+    note_tags: Mapped[list["NoteTag"]] = relationship(
+        back_populates="tag", cascade="all, delete-orphan"
+    )
 
 
 class NoteTag(Base):

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, Depends, HTTPException
+from fastapi import FastAPI, status, Depends, HTTPException, Request, responses
 from sqlalchemy.orm import Session
 from .database import get_db
 from .exceptions import InvalidDataError, ResourceNotFoundError
@@ -36,10 +36,7 @@ def create_user(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.create_user(user.model_dump(), db)
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.create_user(user.model_dump(), db)
 
 
 @app.get("/users", response_model=list[UserOut])
@@ -53,10 +50,7 @@ def get_user_by_id(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.get_user_by_id(user_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.get_user_by_id(user_id, db)
 
 
 @app.put("/users/{user_id}", response_model=UserOut)
@@ -66,12 +60,7 @@ def update_user(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.update_user(user_id, user.model_dump(), db)
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.update_user(user_id, user.model_dump(), db)
 
 
 @app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -80,10 +69,7 @@ def delete_user(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        service.delete_user(user_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    service.delete_user(user_id, db)
 
 
 # -------------------------
@@ -95,12 +81,7 @@ def create_note(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.create_note(note.model_dump(), db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.create_note(note.model_dump(), db)
 
 
 @app.get("/notes", response_model=list[NoteOut])
@@ -118,20 +99,14 @@ def get_note_by_id(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.get_note_by_id(note_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.get_note_by_id(note_id, db)
 
 
 @app.get("/tags/{tag_id}/notes", response_model=list[NoteOut])
 def get_notes_by_tag_id(
     tag_id, service: Services = Depends(get_service), db: Session = Depends(get_db)
 ):
-    try:
-        return service.get_notes_by_tag_id(tag_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.get_notes_by_tag_id(tag_id, db)
 
 
 @app.put("/notes/{note_id}", response_model=NoteOut)
@@ -141,12 +116,7 @@ def update_note(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.update_note(note_id, note.model_dump(), db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.update_note(note_id, note.model_dump(), db)
 
 
 @app.delete("/notes/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -155,10 +125,7 @@ def delete_note(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        service.delete_note(note_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    service.delete_note(note_id, db)
 
 
 @app.get("/users/{user_id}/notes", response_model=list[NoteOut])
@@ -167,10 +134,7 @@ def get_notes_by_user_id(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.get_notes_by_user_id(user_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.get_notes_by_user_id(user_id, db)
 
 
 # -------------------------
@@ -180,10 +144,7 @@ def get_notes_by_user_id(
 def create_tag(
     tag: TagIn, service: Services = Depends(get_service), db: Session = Depends(get_db)
 ):
-    try:
-        return service.create_tag(tag.model_dump(), db)
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.create_tag(tag.model_dump(), db)
 
 
 @app.get("/tags", response_model=list[TagOut])
@@ -197,10 +158,7 @@ def get_tags_by_note_id(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.get_tags_by_note_id(note_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    return service.get_tags_by_note_id(note_id, db)
 
 
 @app.put("/tags/{tag_id}", response_model=TagOut)
@@ -210,22 +168,14 @@ def update_tag(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.update_tag(tag_id, tag.model_dump(), db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.update_tag(tag_id, tag.model_dump(), db)
 
 
 @app.delete("/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_tag(
     tag_id: int, service: Services = Depends(get_service), db: Session = Depends(get_db)
 ):
-    try:
-        service.delete_tag(tag_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    service.delete_tag(tag_id, db)
 
 
 # -------------------------
@@ -237,12 +187,7 @@ def create_note_tag(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.create_note_tag(note_tag.model_dump(), db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.create_note_tag(note_tag.model_dump(), db)
 
 
 @app.get("/note_tags", response_model=list[NoteTagOut])
@@ -259,12 +204,7 @@ def update_note_tag(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        return service.update_note_tag(note_tag_id, note_tag.model_dump(), db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except InvalidDataError as e:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=str(e))
+    return service.update_note_tag(note_tag_id, note_tag.model_dump(), db)
 
 
 @app.delete("/note_tags/{note_tag_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -273,7 +213,23 @@ def delete_note_tag(
     service: Services = Depends(get_service),
     db: Session = Depends(get_db),
 ):
-    try:
-        service.delete_note_tag(note_tag_id, db)
-    except ResourceNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    service.delete_note_tag(note_tag_id, db)
+
+
+# -------------------------
+# EXCEPTION HANDLING
+# -------------------------
+@app.exception_handler(ResourceNotFoundError)
+def not_found_handler(request: Request, e: ResourceNotFoundError):
+    return responses.JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"detail": str(e), "path": request.url.path, "method": request.method},
+    )
+
+
+@app.exception_handler(InvalidDataError)
+def invalid_data_handler(request: Request, e: InvalidDataError):
+    return responses.JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": str(e), "path": request.url.path, "method": request.method},
+    )

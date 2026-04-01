@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+.venv
+.env
+.env_example
+alembic/
+tests/
+.git
+.gitignore
+alembic.ini
+knowledge_base_old.db
+README.md
+TODO.md
